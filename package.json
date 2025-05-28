@@ -2,10 +2,10 @@
   "name": "viha-whatsapp-bot",
   "version": "1.0.0",
   "description": "WhatsApp bot for VihaCandlesAndGiftings",
-  "main": "Vihabot.js",
+  "main": "vihaBot.js",
   "scripts": {
-    "start": "node Vihabot.js",
-    "dev": "node Vihabot.js"
+    "start": "node vihaBot.js",
+    "dev": "node vihaBot.js"
   },
   "dependencies": {
     "express": "^4.18.2",

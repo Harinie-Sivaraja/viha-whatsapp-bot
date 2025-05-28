@@ -224,7 +224,7 @@ const sendUnder50Images = async (chatId) => {
         await new Promise(resolve => setTimeout(resolve, 1000));
         
         // Path to your images folder - relative path for cloud deployment
-        const imagesFolder = './Gifts_Under50';
+        const imagesFolder = path.join(__dirname, 'Gifts_Under50');
         
         // Read all files from the images folder
         const imageFiles = fs.readdirSync(imagesFolder).filter(file => {
@@ -299,7 +299,7 @@ const sendUnder100Images = async (chatId) => {
         await new Promise(resolve => setTimeout(resolve, 1000));
         
         // Path to your images folder - relative path for cloud deployment
-        const imagesFolder = './Gifts_Under100';
+        const imagesFolder = path.join(__dirname, 'Gifts_Under100');
         
         // Read all files from the images folder
         const imageFiles = fs.readdirSync(imagesFolder).filter(file => {
