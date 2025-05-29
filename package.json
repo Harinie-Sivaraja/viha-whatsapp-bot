@@ -1,23 +1,32 @@
 {
-  "name": "viha-whatsapp-bot",
+  "name": "whatsapp-bot-viha",
   "version": "1.0.0",
-  "description": "WhatsApp bot for VihaCandlesAndGiftings",
-  "main": "vihaBot.js",
+  "description": "WhatsApp bot for VihaCandlesAndGiftings with MongoDB session storage",
+  "main": "index.js",
   "scripts": {
-    "start": "node vihaBot.js",
-    "dev": "node vihaBot.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "dependencies": {
     "express": "^4.18.2",
     "qrcode": "^1.5.3",
     "qrcode-terminal": "^0.12.0",
     "whatsapp-web.js": "^1.21.0",
-    "puppeteer": "^19.0.0"
+    "mongoose": "^7.5.0",
+    "wwebjs-mongo": "^1.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
   },
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=18.0.0"
   },
-  "keywords": ["whatsapp", "bot", "gifts"],
+  "keywords": [
+    "whatsapp",
+    "bot",
+    "mongodb",
+    "return-gifts"
+  ],
   "author": "VihaCandlesAndGiftings",
   "license": "MIT"
 }
