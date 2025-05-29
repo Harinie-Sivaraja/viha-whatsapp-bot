@@ -1,3 +1,5 @@
+process.env.NODE_OPTIONS = '--max-old-space-size=512';
+
 const qrcode = require('qrcode-terminal');
 const QRCode = require('qrcode');
 const express = require('express');
@@ -129,29 +131,43 @@ async function initializeWhatsAppClient() {
         
         // WhatsApp Client Setup with MongoDB session store using RemoteAuth
         const client = new Client({
-            authStrategy: new RemoteAuth({
-                store: mongoStore,
-                backupSyncIntervalMs: 300000 // Backup every 5 minutes
-            }),
-            puppeteer: {
-                headless: true,
-                args: [
-                    '--no-sandbox',
-                    '--disable-setuid-sandbox',
-                    '--disable-dev-shm-usage',
-                    '--disable-accelerated-2d-canvas',
-                    '--no-first-run',
-                    '--no-zygote',
-                    '--single-process',
-                    '--disable-gpu',
-                    '--disable-web-security',
-                    '--disable-features=VizDisplayCompositor',
-                    '--disable-background-timer-throttling',
-                    '--disable-backgrounding-occluded-windows',
-                    '--disable-renderer-backgrounding'
-                ]
-            }
-        });
+    authStrategy: new RemoteAuth({
+        store: mongoStore,
+        backupSyncIntervalMs: 600000 // Increased to 10 minutes to reduce memory usage
+    }),
+    puppeteer: {
+        headless: 'new', // Use new headless mode
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-accelerated-2d-canvas',
+            '--disable-gpu',
+            '--disable-web-security',
+            '--disable-features=VizDisplayCompositor,AudioServiceOutOfProcess',
+            '--disable-background-timer-throttling',
+            '--disable-backgrounding-occluded-windows',
+            '--disable-renderer-backgrounding',
+            '--disable-extensions',
+            '--disable-plugins',
+            '--disable-default-apps',
+            '--disable-hang-monitor',
+            '--disable-popup-blocking',
+            '--disable-prompt-on-repost',
+            '--disable-sync',
+            '--disable-translate',
+            '--metrics-recording-only',
+            '--no-first-run',
+            '--safebrowsing-disable-auto-update',
+            '--enable-automation',
+            '--password-store=basic',
+            '--use-mock-keychain',
+            '--single-process', // This is crucial for Render
+            '--memory-pressure-off',
+            '--max_old_space_size=512'
+        ]
+    }
+});
 
         client.on('qr', async (qr) => {
             console.log('📱 QR Code received, generating web QR...');
