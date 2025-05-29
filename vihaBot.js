@@ -1,7 +1,7 @@
 const qrcode = require('qrcode-terminal');
 const QRCode = require('qrcode');
 const express = require('express');
-const { Client, MessageMedia } = require('whatsapp-web.js');
+const { Client, MessageMedia, RemoteAuth } = require('whatsapp-web.js');
 const { MongoStore } = require('wwebjs-mongo');
 const mongoose = require('mongoose');
 
@@ -127,9 +127,12 @@ async function initializeWhatsAppClient() {
         
         console.log('🔄 Creating WhatsApp client with MongoDB session...');
         
-        // WhatsApp Client Setup with MongoDB session store
+        // WhatsApp Client Setup with MongoDB session store using RemoteAuth
         const client = new Client({
-            authStrategy: mongoStore,
+            authStrategy: new RemoteAuth({
+                store: mongoStore,
+                backupSyncIntervalMs: 300000 // Backup every 5 minutes
+            }),
             puppeteer: {
                 headless: true,
                 args: [
@@ -186,6 +189,11 @@ async function initializeWhatsAppClient() {
             console.log('❌ Client disconnected:', reason);
             isReady = false;
             // The session is still saved in MongoDB, so it will reconnect automatically
+        });
+
+        // RemoteAuth events
+        client.on('remote_session_saved', () => {
+            console.log('💾 Remote session saved to MongoDB');
         });
 
         // Add your existing message handling code here
@@ -424,7 +432,7 @@ Our team will give you complete details. 😊`);
                     const media = MessageMedia.fromFilePath(imagePath);
                     await client.sendMessage(chatId, media);
                     
-                    // Longer delay between images (2 seconds) to avoid WhatsApp rate limiting
+                    // Longer delay between images (2.seconds) to avoid WhatsApp rate limiting
                     await new Promise(resolve => setTimeout(resolve, 2000));
                 } catch (error) {
                     console.error(`Error sending image ${imageFiles[i]}:`, error);
