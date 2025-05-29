@@ -10,15 +10,6 @@ const PORT = process.env.PORT || 3000;
 let qrCodeData = '';
 let isReady = false;
 
-// Connection retry logic - ADD THIS SECTION
-let reconnectAttempts = 0;
-const maxReconnectAttempts = 3;
-
-const initializeClient = () => {
-    console.log(`Initializing WhatsApp client... (Attempt ${reconnectAttempts + 1})`);
-    client.initialize();
-};
-
 // Serve QR code page
 app.get('/', (req, res) => {
     if (isReady) {
@@ -85,6 +76,7 @@ if (process.env.NODE_ENV === 'production') {
     }, 14 * 60 * 1000); // Every 14 minutes
 }
 
+
 // WhatsApp Client Setup
 const client = new Client({
     authStrategy: new LocalAuth(),
@@ -119,12 +111,10 @@ client.on('qr', async (qr) => {
     }
 });
 
-// REPLACE the existing client.on('ready') with this enhanced version
 client.on('ready', () => {
     console.log('✅ VihaCandlesAndGiftings Bot is ready!');
     isReady = true;
     qrCodeData = ''; // Clear QR code
-    reconnectAttempts = 0; // Reset counter on success
 });
 
 client.on('authenticated', () => {
@@ -132,12 +122,10 @@ client.on('authenticated', () => {
     isReady = true;
 });
 
-// REPLACE the existing client.on('auth_failure') with this enhanced version
 client.on('auth_failure', msg => {
     console.error('❌ Authentication failed', msg);
     isReady = false;
     qrCodeData = '';
-    reconnectAttempts = 0; // Reset counter on auth failure
 });
 
 const userState = {}; // Stores each user's state
@@ -642,24 +630,11 @@ client.on('message', async message => {
     }
 });
 
-// REPLACE the existing client.on('disconnected') with this enhanced version
+// Error handling
 client.on('disconnected', (reason) => {
-    console.log(`Client was logged out: ${reason}`);
+    console.log('Client was logged out', reason);
     isReady = false;
-    qrCodeData = '';
-    
-    // Auto-reconnect logic
-    if (reconnectAttempts < maxReconnectAttempts) {
-        reconnectAttempts++;
-        console.log(`Attempting to reconnect... (${reconnectAttempts}/${maxReconnectAttempts})`);
-        setTimeout(() => {
-            initializeClient();
-        }, 10000); // Wait 10 seconds before retry
-    } else {
-        console.log('Max reconnection attempts reached. Manual restart required.');
-    }
 });
 
 console.log('Starting WhatsApp bot with enhanced menu interface and human agent override...');
-// REPLACE client.initialize() with this:
-initializeClient();
+client.initialize();
